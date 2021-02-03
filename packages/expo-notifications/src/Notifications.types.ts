@@ -193,6 +193,38 @@ export enum AndroidNotificationPriority {
   HIGH = 'high',
   MAX = 'max',
 }
+export type IosNotificationContent = {
+  launchImageName: string | null;
+  badge: number | null;
+  attachments: {
+    identifier: string | null;
+    url: string | null;
+    type: string | null;
+  }[];
+  summaryArgument?: string | null;
+  summaryArgumentCount?: number;
+  categoryIdentifier: string | null;
+  threadIdentifier: string | null;
+  targetContentIdentifier?: string;
+};
+
+export type AndroidNotificationContent = {
+  badge?: number;
+  /**
+   * Format: '#AARRGGBB'
+   */
+  color?: string;
+  priority?: AndroidNotificationPriority;
+  vibrationPattern?: number[];
+};
+
+export const isIosSpecificNotificationContent = (variableToCheck: any): variableToCheck is IosNotificationContent => {
+  return variableToCheck && typeof variableToCheck.launchImageName !== 'undefined';
+};
+
+export const isAndroidSpecificNotificationContent = (variableToCheck: any): variableToCheck is AndroidNotificationContent => {
+  return !isIosSpecificNotificationContent(variableToCheck);
+};
 
 export type NotificationContent = {
   title: string | null;
@@ -201,29 +233,8 @@ export type NotificationContent = {
   data: { [key: string]: unknown };
   sound: 'default' | 'defaultCritical' | 'custom' | null;
 } & (
-  | {
-      launchImageName: string | null;
-      badge: number | null;
-      attachments: {
-        identifier: string | null;
-        url: string | null;
-        type: string | null;
-      }[];
-      summaryArgument?: string | null;
-      summaryArgumentCount?: number;
-      categoryIdentifier: string | null;
-      threadIdentifier: string | null;
-      targetContentIdentifier?: string;
-    }
-  | {
-      badge?: number;
-      /**
-       * Format: '#AARRGGBB'
-       */
-      color?: string;
-      priority?: AndroidNotificationPriority;
-      vibrationPattern?: number[];
-    }
+  | IosNotificationContent
+  | AndroidNotificationContent
 );
 
 export interface NotificationRequest {
